@@ -512,9 +512,22 @@
                 settings: 'Setări',
                 logout: 'Deconectare'
             };
-            const sortedPages = Object.keys(clickCounts).sort((a, b) => clickCounts[b] - clickCounts[a]);
-            sortedPages.forEach(pageId => {
-                if (pageId === 'logout') return;
+
+            // Add "Acasă" link (fixed at the top)
+            const homeLink = document.createElement('a');
+            homeLink.href = '#home';
+            homeLink.textContent = pageMappings['home'];
+            homeLink.onclick = (e) => {
+                e.preventDefault();
+                showPage('home');
+            };
+            nav.appendChild(homeLink);
+
+            // Sort and add the middle links (excluding home and logout)
+            const sortablePages = Object.keys(clickCounts)
+                .filter(pageId => pageId !== 'home' && pageId !== 'logout')
+                .sort((a, b) => clickCounts[b] - clickCounts[a]);
+            sortablePages.forEach(pageId => {
                 const link = document.createElement('a');
                 link.href = `#${pageId}`;
                 link.textContent = pageMappings[pageId];
@@ -524,9 +537,11 @@
                 };
                 nav.appendChild(link);
             });
+
+            // Add "Deconectare" link (fixed at the bottom)
             const logoutLink = document.createElement('a');
             logoutLink.href = '#logout';
-            logoutLink.textContent = 'Deconectare';
+            logoutLink.textContent = pageMappings['logout'];
             logoutLink.onclick = (e) => {
                 e.preventDefault();
                 logout();
@@ -534,6 +549,7 @@
             nav.appendChild(logoutLink);
         }
 
+        // Initial navigation setup
         document.querySelectorAll('nav a').forEach(link => {
             link.onclick = (e) => {
                 e.preventDefault();
@@ -543,6 +559,7 @@
             };
         });
 
+        // Load saved settings on startup
         window.onload = function() {
             const savedBgColor = localStorage.getItem('bgColor') || '#f5f5f5';
             const savedTextColor = localStorage.getItem('textColor') || '#2f3437';
