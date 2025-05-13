@@ -42,6 +42,11 @@
         nav a:hover {
             background-color: #e5e7eb;
         }
+        nav a.active {
+            background-color: #dbeafe;
+            font-weight: 600;
+            color: #1e40af; 
+        }
         .nav-toggle {
             display: none;
             background: none;
@@ -214,8 +219,8 @@
             </div>
         </div>
         <div class="container" id="home" style="display: none;">
-            <h1>To Do List for Students!</h1>
-            <p>Aplicatie pentru a gestiona usor Task-urile tale.</p>
+            <h1>To Do List <3</h1>
+            <p>Aplicatie minimalista pentru setarea si navigarea unor task-uri!</p>
         </div>
         <div class="container" id="add-task" style="display: none;">
             <h2>Adaugă o Sarcină Nouă</h2>
@@ -329,6 +334,15 @@
             document.getElementById(pageId).style.display = 'block';
             clickCounts[pageId]++;
             updateNavOrder();
+
+            // Remove active class from all links and add to current page
+            document.querySelectorAll('#nav-bar a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === pageId || (pageId === 'login' && link.getAttribute('href').substring(1) === 'login')) {
+                    link.classList.add('active');
+                }
+            });
+
             if (pageId === 'task-list') updateTaskList();
         }
 
@@ -547,6 +561,14 @@
                 logout();
             };
             nav.appendChild(logoutLink);
+
+            // Ensure the active page is highlighted after reordering
+            document.querySelectorAll('#nav-bar a').forEach(link => {
+                const currentPage = document.querySelector('.container[style*="display: block"]').id;
+                if (link.getAttribute('href').substring(1) === currentPage || (currentPage === 'login' && link.getAttribute('href').substring(1) === 'login')) {
+                    link.classList.add('active');
+                }
+            });
         }
 
         // Initial navigation setup
