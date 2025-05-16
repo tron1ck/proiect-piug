@@ -43,15 +43,12 @@
 </head>
 <body class="light-mode min-h-screen font-sans transition-colors duration-300">
     <div id="app" class="container mx-auto p-6">
-        <!-- Loading Spinner -->
         <div id="loading" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center hidden">
             <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
         </div>
-
-        <!-- Navigation -->
         <nav id="nav-bar" class="flex justify-between items-center mb-8 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
             <div class="text-2xl font-bold text-gray-800 dark:text-gray-200">To-Do List</div>
-            <div class="space-x-4">
+            <div class="space-x-4" id="nav-links">
                 <a href="#home" class="page-link text-gray-600 dark:text-gray-300 hover:text-blue-500" data-control="nav-home">Acasă</a>
                 <a href="#add-task" class="page-link text-gray-600 dark:text-gray-300 hover:text-blue-500" data-control="nav-add-task">Adaugă Sarcină</a>
                 <a href="#task-list" class="page-link text-gray-600 dark:text-gray-300 hover:text-blue-500" data-control="nav-task-list">Listă Sarcini</a>
@@ -60,14 +57,10 @@
                 <button id="theme-toggle" class="text-gray-600 dark:text-gray-300 hover:text-blue-500" data-control="theme-toggle">🌙</button>
             </div>
         </nav>
-
-        <!-- Toast Notification -->
         <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg hidden">
             <span id="toast-message"></span>
             <button id="undo-btn" class="ml-4 underline hidden">Undo</button>
         </div>
-
-        <!-- Login Page -->
         <div id="login-page" class="page hidden">
             <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-6 text-center">Autentificare</h2>
@@ -85,8 +78,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Register Page -->
         <div id="register-page" class="page hidden">
             <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-6 text-center">Înregistrare</h2>
@@ -108,8 +99,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Home Page -->
         <div id="home-page" class="page">
             <div class="text-center">
                 <h1 class="text-4xl font-bold mb-4">To-Do List</h1>
@@ -120,8 +109,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Add Task Page -->
         <div id="add-task-page" class="page hidden">
             <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-6">Adaugă o Sarcină Nouă</h2>
@@ -143,8 +130,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Task List Page -->
         <div id="task-list-page" class="page hidden">
             <h2 class="text-2xl font-semibold mb-6">Listă Sarcini</h2>
             <div class="flex justify-between mb-4">
@@ -187,8 +172,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- Settings Page -->
         <div id="settings-page" class="page hidden">
             <h2 class="text-2xl font-semibold mb-6">Setări</h2>
             <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
@@ -215,26 +198,21 @@
             </div>
         </div>
     </div>
-
     <script>
-        
         let currentUser = null;
         const users = JSON.parse(localStorage.getItem('users')) || {};
-
         function saveUsers() {
             localStorage.setItem('users', JSON.stringify(users));
         }
-
-        
         let controlCounts = JSON.parse(localStorage.getItem('controlCounts')) || {};
         function trackControl(controlId) {
             controlCounts[controlId] = (controlCounts[controlId] || 0) + 1;
             localStorage.setItem('controlCounts', JSON.stringify(controlCounts));
             reorderNav();
         }
-
         function reorderNav() {
-            const navBar = document.getElementById('nav-bar').querySelector('div.space-x-4');
+            const navBar = document.getElementById('nav-links');
+            const themeToggle = document.getElementById('theme-toggle');
             const links = Array.from(navBar.querySelectorAll('.page-link'));
             links.sort((a, b) => {
                 const countA = controlCounts[a.getAttribute('data-control')] || 0;
@@ -243,15 +221,20 @@
             });
             navBar.innerHTML = '';
             links.forEach(link => navBar.appendChild(link));
-            navBar.appendChild(document.getElementById('theme-toggle'));
+            if (themeToggle) {
+                navBar.appendChild(themeToggle);
+                themeToggle.onclick = () => {
+                    trackControl('theme-toggle');
+                    document.body.classList.toggle('dark-mode');
+                    document.body.classList.toggle('light-mode');
+                    themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+                    applySettings();
+                };
+            }
         }
-
-        
         function showLoading(show) {
             document.getElementById('loading').classList.toggle('hidden', !show);
         }
-
-        
         let lastDeletedTask = null;
         function showToast(message, showUndo = false) {
             const toast = document.getElementById('toast');
@@ -260,8 +243,6 @@
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3000);
         }
-
-        
         function validateInput(input, errorId, condition, errorMessage) {
             const errorElement = document.getElementById(errorId);
             if (condition) {
@@ -275,8 +256,6 @@
                 return false;
             }
         }
-
-        
         document.getElementById('login-btn').addEventListener('click', () => {
             trackControl('login-btn');
             const username = document.getElementById('login-username');
@@ -298,8 +277,6 @@
                 showLoading(false);
             }, 500);
         });
-
-        
         document.getElementById('register-btn').addEventListener('click', () => {
             trackControl('register-btn');
             const username = document.getElementById('register-username');
@@ -322,22 +299,17 @@
                 showLoading(false);
             }, 500);
         });
-
-        
         let tasks = [];
-
         function saveTasks() {
             if (currentUser) {
                 users[currentUser].tasks = tasks;
                 saveUsers();
             }
         }
-
         function loadTasks() {
             tasks = currentUser ? (users[currentUser].tasks || []) : [];
             renderTasks();
         }
-
         document.getElementById('add-task-btn').addEventListener('click', () => {
             trackControl('add-task-btn');
             const name = document.getElementById('task-name');
@@ -359,21 +331,17 @@
                 showLoading(false);
             }, 500);
         });
-
-        
         document.getElementById('add-task-page').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 document.getElementById('add-task-btn').click();
             }
         });
-
         function renderTasks() {
             const taskTable = document.getElementById('task-table');
             const completedTaskTable = document.getElementById('completed-task-table');
             const showUncompleted = document.getElementById('show-uncompleted').checked;
             taskTable.innerHTML = '';
             completedTaskTable.innerHTML = '';
-
             tasks.forEach(task => {
                 if (showUncompleted && task.completed) return;
                 const row = document.createElement('tr');
@@ -393,7 +361,6 @@
                 }
             });
         }
-
         function toggleTask(id) {
             trackControl(`task-${id}-toggle`);
             tasks = tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task);
@@ -401,7 +368,6 @@
             showToast(`Sarcină ${tasks.find(t => t.id === id).completed ? 'completată' : 'necompletată'}!`);
             renderTasks();
         }
-
         function deleteTask(id) {
             trackControl(`task-${id}-delete`);
             lastDeletedTask = tasks.find(task => task.id === id);
@@ -410,7 +376,6 @@
             showToast('Sarcină ștearsă!', true);
             renderTasks();
         }
-
         document.getElementById('undo-btn').addEventListener('click', () => {
             if (lastDeletedTask) {
                 tasks.push(lastDeletedTask);
@@ -420,7 +385,6 @@
                 lastDeletedTask = null;
             }
         });
-
         document.getElementById('delete-all-tasks').addEventListener('click', () => {
             trackControl('delete-all-tasks');
             if (confirm('Sigur vrei să ștergi toate sarcinile?')) {
@@ -435,7 +399,6 @@
                 }, 500);
             }
         });
-
         document.getElementById('sort-priority').addEventListener('click', () => {
             trackControl('sort-priority');
             tasks.sort((a, b) => {
@@ -445,20 +408,16 @@
             renderTasks();
             showToast('Sarcinile au fost sortate după prioritate!');
         });
-
         document.getElementById('sort-date').addEventListener('click', () => {
             trackControl('sort-date');
             tasks.sort((a, b) => new Date(a.date) - new Date(b.date));
             renderTasks();
             showToast('Sarcinile au fost sortate după dată!');
         });
-
         document.getElementById('show-uncompleted').addEventListener('change', () => {
             trackControl('show-uncompleted');
             renderTasks();
         });
-
-        
         function applySettings() {
             const bgColor = document.getElementById('bg-color').value;
             const textColor = document.getElementById('text-color').value;
@@ -470,7 +429,6 @@
             }
             showToast('Setările au fost aplicate!');
         }
-
         function applyUserSettings() {
             if (currentUser && users[currentUser].settings) {
                 const { bgColor, textColor, isDarkMode } = users[currentUser].settings;
@@ -485,20 +443,16 @@
                 document.getElementById('preview').style.color = textColor || '#2d3748';
             }
         }
-
         document.getElementById('bg-color').addEventListener('input', () => {
             document.getElementById('preview').style.backgroundColor = document.getElementById('bg-color').value;
         });
-
         document.getElementById('text-color').addEventListener('input', () => {
             document.getElementById('preview').style.color = document.getElementById('text-color').value;
         });
-
         document.getElementById('apply-settings').addEventListener('click', () => {
             trackControl('apply-settings');
             applySettings();
         });
-
         document.getElementById('reset-settings').addEventListener('click', () => {
             trackControl('reset-settings');
             document.body.style.backgroundColor = '';
@@ -516,8 +470,6 @@
             }
             showToast('Setările au fost resetate!');
         });
-
-       
         document.getElementById('theme-toggle').addEventListener('click', () => {
             trackControl('theme-toggle');
             document.body.classList.toggle('dark-mode');
@@ -525,19 +477,15 @@
             document.getElementById('theme-toggle').textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
             applySettings();
         });
-
-       
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             document.getElementById(`${pageId}-page`).classList.remove('hidden');
         }
-
         document.querySelectorAll('[data-control]').forEach(element => {
             element.addEventListener('click', () => {
                 trackControl(element.getAttribute('data-control'));
             });
         });
-
         document.querySelectorAll('.page-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -554,8 +502,6 @@
                 }
             });
         });
-
-        
         if (currentUser) {
             showPage('home');
             loadTasks();
