@@ -3,594 +3,567 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To Do List for Students</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>To-Do List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        .dark-mode {
+            background-color: #1a202c;
+            color: #e2e8f0;
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f5f5f5;
-            color: #2f3437;
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
+        .light-mode {
+            background-color: #f7fafc;
+            color: #2d3748;
         }
-        nav {
-            background-color: #ffffff;
-            border-right: 1px solid #e5e7eb;
-            width: 200px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding: 20px;
-            display: none;
+        .task-row:hover {
+            background-color: rgba(0, 0, 0, 0.05);
         }
-        nav a {
-            display: block;
-            padding: 10px;
-            color: #2f3437;
-            text-decoration: none;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            transition: background 0.2s;
-        }
-        nav a:hover {
-            background-color: #e5e7eb;
-        }
-        nav a.active {
-            background-color: #dbeafe;
-            font-weight: 600;
-            color: #1e40af; 
-        }
-        .nav-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            padding: 10px;
-            cursor: pointer;
-            position: fixed;
-            top: 10px;
-            left: 10px;
-        }
-        .main-content {
-            margin-left: 0;
-            padding: 20px;
-            transition: margin-left 0.3s;
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 25px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        h1, h2 {
-            color: #2f3437;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        input, button, select {
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #d1d5db;
-            border-radius: 5px;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-        input[type="color"] {
-            width: 50px;
-            height: 40px;
-            padding: 0;
-            cursor: pointer;
-        }
-        button {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background-color: #2563eb;
+        .dark-mode .task-row:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
         .error {
-            color: #ef4444;
-            font-size: 14px;
-            margin: 5px 0;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s;
+            border-color: #ef4444 !important;
         }
-        .error.show {
-            opacity: 1;
+        .tooltip {
+            position: relative;
         }
-        .login-form, .settings-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-        .task-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .task-form input, .task-form button {
-            flex: 1;
-            min-width: 150px;
-        }
-        .settings-preview {
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #e5e7eb;
-            border-radius: 5px;
-            text-align: center;
-            background-color: #f5f5f5;
-            color: #2f3437;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .responsive-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .responsive-table th, .responsive-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .responsive-table th {
-            background-color: #f9fafb;
-            font-weight: 500;
-        }
-        .task-item.completed {
-            text-decoration: line-through;
-            color: #6b7280;
-        }
-        .task-item.completed td {
-            background-color: #f3f4f6;
-        }
-        .task-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .filter-sort {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        @media (min-width: 768px) {
-            nav {
-                display: block !important;
-            }
-            .main-content {
-                margin-left: 200px;
-            }
-            .nav-toggle {
-                display: none;
-            }
-        }
-        @media (max-width: 767px) {
-            nav {
-                width: 200px;
-                transform: translateX(-100%);
-                transition: transform 0.3s;
-            }
-            nav.active {
-                transform: translateX(0);
-            }
-            .nav-toggle {
-                display: block;
-            }
-            .main-content {
-                margin-left: 0;
-            }
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10;
         }
     </style>
 </head>
-<body>
-    <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
-    <nav id="nav-bar">
-        <a href="#home" onclick="showPage('home')">Acasă</a>
-        <a href="#add-task" onclick="showPage('add-task')">Adaugă Sarcină</a>
-        <a href="#task-list" onclick="showPage('task-list')">Listă Sarcini</a>
-        <a href="#settings" onclick="showPage('settings')">Setări</a>
-        <a href="#logout" onclick="logout()">Deconectare</a>
-    </nav>
-    <div class="main-content">
-        <div class="container" id="login">
-            <h2>Autentificare</h2>
-            <div class="login-form">
-                <input type="text" id="username" placeholder="Nume utilizator">
-                <input type="password" id="password" placeholder="Parolă">
-                <div id="login-error" class="error"></div>
-                <button onclick="login()">Conectare</button>
+<body class="light-mode min-h-screen font-sans transition-colors duration-300">
+    <div id="app" class="container mx-auto p-6">
+        <!-- Loading Spinner -->
+        <div id="loading" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center hidden">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+        </div>
+
+        <!-- Navigation -->
+        <nav id="nav-bar" class="flex justify-between items-center mb-8 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            <div class="text-2xl font-bold text-gray-800 dark:text-gray-200">To-Do List</div>
+            <div class="space-x-4">
+                <a href="#home" class="page-link text-gray-600 dark:text-gray-300 hover:text-blue-500" data-control="nav-home">Acasă</a>
+                <a href="#add-task" class="page-link text-gray-600 dark:text-gray-300 hover:text-blue-500" data-control="nav-add-task">Adaugă Sarcină</a>
+                <a href="#task-list" class="page-link text-gray-600 dark:text-gray-300 hover:text-blue-500" data-control="nav-task-list">Listă Sarcini</a>
+                <a href="#settings" class="page-link text-gray-600 dark:text-gray-300 hover:text-blue-500" data-control="nav-settings">Setări</a>
+                <a href="#logout" class="page-link text-gray-600 dark:text-gray-300 hover:text-red-500" data-control="nav-logout">Deconectare</a>
+                <button id="theme-toggle" class="text-gray-600 dark:text-gray-300 hover:text-blue-500" data-control="theme-toggle">🌙</button>
             </div>
+        </nav>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg hidden">
+            <span id="toast-message"></span>
+            <button id="undo-btn" class="ml-4 underline hidden">Undo</button>
         </div>
-        <div class="container" id="home" style="display: none;">
-            <h1>To Do List <3</h1>
-            <p>Aplicatie minimalista pentru setarea si navigarea unor task-uri!</p>
-        </div>
-        <div class="container" id="add-task" style="display: none;">
-            <h2>Adaugă o Sarcină Nouă</h2>
-            <div class="task-form">
-                <input type="text" id="task-name" placeholder="Nume sarcină (min 3 caractere)">
-                <input type="date" id="task-date">
-                <input type="text" id="task-priority" placeholder="Prioritate (1-5)">
-                <button onclick="addTask()">Adaugă</button>
-            </div>
-            <div id="task-name-error" class="error"></div>
-            <div id="task-date-error" class="error"></div>
-            <div id="task-priority-error" class="error"></div>
-        </div>
-        <div class="container" id="task-list" style="display: none;">
-            <h2>Listă Sarcini</h2>
-            <div class="filter-sort">
-                <select id="sort-tasks" onchange="sortTasks()">
-                    <option value="priority">Sortează după prioritate</option>
-                    <option value="date">Sortează după dată</option>
-                </select>
-                <button onclick="toggleShowCompleted()">
-                    <span id="show-completed-text">Arată doar neterminate</span>
-                </button>
-                <button onclick="clearAllTasks()">Șterge toate sarcinile</button>
-            </div>
-            <table class="responsive-table">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Nume</th>
-                        <th>Data</th>
-                        <th>Prioritate</th>
-                        <th>Acțiuni</th>
-                    </tr>
-                </thead>
-                <tbody id="task-table-body"></tbody>
-            </table>
-            <h2 style="margin-top: 30px;">Sarcini Terminate</h2>
-            <table class="responsive-table">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Nume</th>
-                        <th>Data</th>
-                        <th>Prioritate</th>
-                        <th>Acțiuni</th>
-                    </tr>
-                </thead>
-                <tbody id="completed-task-table-body"></tbody>
-            </table>
-        </div>
-        <div class="container" id="settings" style="display: none;">
-            <h2>Setări</h2>
-            <div class="settings-form">
-                <label>Culoare fundal:</label>
-                <input type="color" id="bg-color" value="#f5f5f5" oninput="previewSettings()">
-                <label>Culoare text:</label>
-                <input type="color" id="text-color" value="#2f3437" oninput="previewSettings()">
-                <div class="settings-preview" id="settings-preview">
-                    <h3>Previzualizare</h3>
-                    <p>Acesta este cum va arăta aplicația.</p>
+
+        <!-- Login Page -->
+        <div id="login-page" class="page hidden">
+            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-center">Autentificare</h2>
+                <div class="space-y-4">
+                    <div>
+                        <input type="text" id="login-username" placeholder="Nume utilizator" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <p id="login-username-error" class="text-red-500 text-sm hidden">Introduceți un nume de utilizator.</p>
+                    </div>
+                    <div>
+                        <input type="password" id="login-password" placeholder="Parolă" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <p id="login-password-error" class="text-red-500 text-sm hidden">Introduceți o parolă.</p>
+                    </div>
+                    <button id="login-btn" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600" data-control="login-btn">Conectare</button>
+                    <p class="text-center">Nu ai cont? <a href="#register" class="page-link text-blue-500 hover:underline" data-control="nav-register">Înregistrează-te</a></p>
                 </div>
-                <button onclick="applySettings()">Aplică</button>
+            </div>
+        </div>
+
+        <!-- Register Page -->
+        <div id="register-page" class="page hidden">
+            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-center">Înregistrare</h2>
+                <div class="space-y-4">
+                    <div>
+                        <input type="text" id="register-username" placeholder="Nume utilizator" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <p id="register-username-error" class="text-red-500 text-sm hidden">Numele trebuie să aibă minim 3 caractere.</p>
+                    </div>
+                    <div>
+                        <input type="password" id="register-password" placeholder="Parolă" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <p id="register-password-error" class="text-red-500 text-sm hidden">Parola trebuie să aibă minim 6 caractere.</p>
+                    </div>
+                    <div>
+                        <input type="password" id="register-confirm-password" placeholder="Confirmă parola" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <p id="register-confirm-password-error" class="text-red-500 text-sm hidden">Parolele nu se potrivesc.</p>
+                    </div>
+                    <button id="register-btn" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600" data-control="register-btn">Înregistrează-te</button>
+                    <p class="text-center">Ai deja cont? <a href="#login" class="page-link text-blue-500 hover:underline" data-control="nav-login">Conectează-te</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Page -->
+        <div id="home-page" class="page">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-4">To-Do List</h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300 mb-4">Aplicație minimalistă pentru setarea și navigarea sarcinilor!</p>
+                <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4">Ajutor</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Utilizați meniul de mai sus pentru a naviga. Adăugați sarcini în pagina "Adaugă Sarcină", vizualizați-le în "Listă Sarcini" și personalizați aplicația în "Setări". Pentru a adăuga rapid o sarcină, apăsați Enter după completarea formularului.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Task Page -->
+        <div id="add-task-page" class="page hidden">
+            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6">Adaugă o Sarcină Nouă</h2>
+                <div class="space-y-4">
+                    <div>
+                        <input type="text" id="task-name" placeholder="Nume sarcină" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <p id="task-name-error" class="text-red-500 text-sm hidden">Numele trebuie să aibă minim 3 caractere și să conțină doar litere, cifre și spații.</p>
+                    </div>
+                    <div>
+                        <input type="date" id="task-date" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <p id="task-date-error" class="text-red-500 text-sm hidden">Data trebuie să fie astăzi sau în viitor.</p>
+                    </div>
+                    <select id="task-priority" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="low">Scăzută</option>
+                        <option value="medium">Medie</option>
+                        <option value="high">Ridicată</option>
+                    </select>
+                    <button id="add-task-btn" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 tooltip" data-tooltip="Apăsați Enter pentru a adăuga" data-control="add-task-btn">Adaugă</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task List Page -->
+        <div id="task-list-page" class="page hidden">
+            <h2 class="text-2xl font-semibold mb-6">Listă Sarcini</h2>
+            <div class="flex justify-between mb-4">
+                <div class="space-x-2">
+                    <button id="sort-priority" class="bg-gray-200 dark:bg-gray-700 p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 tooltip" data-tooltip="Sortează sarcinile după prioritate" data-control="sort-priority">Sortează după prioritate</button>
+                    <button id="sort-date" class="bg-gray-200 dark:bg-gray-700 p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 tooltip" data-tooltip="Sortează sarcinile după dată" data-control="sort-date">Sortează după dată</button>
+                </div>
+                <div class="space-x-2">
+                    <label><input type="checkbox" id="show-uncompleted" class="mr-2" data-control="show-uncompleted">Arată doar neterminate</label>
+                    <button id="delete-all-tasks" class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 tooltip" data-tooltip="Șterge toate sarcinile" data-control="delete-all-tasks">Șterge toate sarcinile</button>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b dark:border-gray-600">
+                            <th class="p-3 text-left">Status</th>
+                            <th class="p-3 text-left">Nume</th>
+                            <th class="p-3 text-left">Data</th>
+                            <th class="p-3 text-left">Prioritate</th>
+                            <th class="p-3 text-left">Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="task-table"></tbody>
+                </table>
+            </div>
+            <h3 class="text-xl font-semibold mt-8 mb-4">Sarcini Terminate</h3>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b dark:border-gray-600">
+                            <th class="p-3 text-left">Status</th>
+                            <th class="p-3 text-left">Nume</th>
+                            <th class="p-3 text-left">Data</th>
+                            <th class="p-3 text-left">Prioritate</th>
+                            <th class="p-3 text-left">Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="completed-task-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings-page" class="page hidden">
+            <h2 class="text-2xl font-semibold mb-6">Setări</h2>
+            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block mb-1">Culoare fundal:</label>
+                        <input type="color" id="bg-color" class="w-full h-10 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                    <div>
+                        <label class="block mb-1">Culoare text:</label>
+                        <input type="color" id="text-color" class="w-full h-10 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                    <div>
+                        <label class="block mb-1">Previzualizare:</label>
+                        <div id="preview" class="p-4 rounded-lg border dark:border-gray-600" style="background-color: #ffffff;">
+                            Acesta este cum va arăta aplicația.
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="apply-settings" class="flex-1 bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600" data-control="apply-settings">Aplică</button>
+                        <button id="reset-settings" class="flex-1 bg-gray-500 text-white p-3 rounded-lg hover:bg-gray-600" data-control="reset-settings">Resetează</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        let clickCounts = { home: 0, 'add-task': 0, 'task-list': 0, settings: 0 };
-        let isAuthenticated = false;
-        let showCompleted = false;
+        
+        let currentUser = null;
+        const users = JSON.parse(localStorage.getItem('users')) || {};
 
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('login-error');
+        function saveUsers() {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
 
-            if (username === 'student' && password === 'student') {
-                isAuthenticated = true;
-                errorDiv.textContent = '';
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('nav-bar').style.display = 'block';
-                showPage('home');
+        
+        let controlCounts = JSON.parse(localStorage.getItem('controlCounts')) || {};
+        function trackControl(controlId) {
+            controlCounts[controlId] = (controlCounts[controlId] || 0) + 1;
+            localStorage.setItem('controlCounts', JSON.stringify(controlCounts));
+            reorderNav();
+        }
+
+        function reorderNav() {
+            const navBar = document.getElementById('nav-bar').querySelector('div.space-x-4');
+            const links = Array.from(navBar.querySelectorAll('.page-link'));
+            links.sort((a, b) => {
+                const countA = controlCounts[a.getAttribute('data-control')] || 0;
+                const countB = controlCounts[b.getAttribute('data-control')] || 0;
+                return countB - countA;
+            });
+            navBar.innerHTML = '';
+            links.forEach(link => navBar.appendChild(link));
+            navBar.appendChild(document.getElementById('theme-toggle'));
+        }
+
+        
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('hidden', !show);
+        }
+
+        
+        let lastDeletedTask = null;
+        function showToast(message, showUndo = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            document.getElementById('undo-btn').classList.toggle('hidden', !showUndo);
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        
+        function validateInput(input, errorId, condition, errorMessage) {
+            const errorElement = document.getElementById(errorId);
+            if (condition) {
+                input.classList.remove('error');
+                errorElement.classList.add('hidden');
+                return true;
             } else {
-                errorDiv.textContent = 'Nume utilizator sau parolă incorecte.';
-                errorDiv.classList.add('show');
+                input.classList.add('error');
+                errorElement.textContent = errorMessage;
+                errorElement.classList.remove('hidden');
+                return false;
             }
         }
 
-        function logout() {
-            isAuthenticated = false;
-            tasks = [];
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            document.getElementById('nav-bar').style.display = 'none';
-            showPage('login');
-            updateTaskList();
-        }
-
-        function showPage(pageId) {
-            if (!isAuthenticated) {
-                document.getElementById('login').style.display = 'block';
-                document.querySelectorAll('.container').forEach(container => {
-                    if (container.id !== 'login') container.style.display = 'none';
-                });
-                return;
-            }
-
-            document.querySelectorAll('.container').forEach(container => {
-                container.style.display = 'none';
-            });
-            document.getElementById(pageId).style.display = 'block';
-            clickCounts[pageId]++;
-            updateNavOrder();
-
-            // Remove active class from all links and add to current page
-            document.querySelectorAll('#nav-bar a').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href').substring(1) === pageId || (pageId === 'login' && link.getAttribute('href').substring(1) === 'login')) {
-                    link.classList.add('active');
+        
+        document.getElementById('login-btn').addEventListener('click', () => {
+            trackControl('login-btn');
+            const username = document.getElementById('login-username');
+            const password = document.getElementById('login-password');
+            const isUsernameValid = validateInput(username, 'login-username-error', username.value, 'Introduceți un nume de utilizator.');
+            const isPasswordValid = validateInput(password, 'login-password-error', password.value, 'Introduceți o parolă.');
+            if (!isUsernameValid || !isPasswordValid) return;
+            showLoading(true);
+            setTimeout(() => {
+                if (users[username.value] && users[username.value].password === password.value) {
+                    currentUser = username.value;
+                    showPage('home');
+                    loadTasks();
+                    applyUserSettings();
+                    showToast('Conectare cu succes!');
+                } else {
+                    showToast('Nume utilizator sau parolă incorecte!');
                 }
-            });
-
-            if (pageId === 'task-list') updateTaskList();
-        }
-
-        function toggleNav() {
-            const nav = document.getElementById('nav-bar');
-            nav.classList.toggle('active');
-        }
-
-        function validateTaskName(name) {
-            return name.length >= 3;
-        }
-
-        function validateDate(date) {
-            const today = new Date().toISOString().split('T')[0];
-            return date >= today;
-        }
-
-        function validatePriority(priority) {
-            const num = parseInt(priority);
-            return !isNaN(num) && num >= 1 && num <= 5;
-        }
-
-        function addTask() {
-            if (!isAuthenticated) {
-                showPage('login');
-                return;
-            }
-
-            const name = document.getElementById('task-name').value;
-            const date = document.getElementById('task-date').value;
-            const priority = document.getElementById('task-priority').value;
-
-            document.getElementById('task-name-error').textContent = '';
-            document.getElementById('task-date-error').textContent = '';
-            document.getElementById('task-priority-error').textContent = '';
-
-            let valid = true;
-            if (!validateTaskName(name)) {
-                document.getElementById('task-name-error').textContent = 'Numele trebuie să aibă cel puțin 3 caractere.';
-                document.getElementById('task-name-error').classList.add('show');
-                valid = false;
-            }
-            if (!validateDate(date)) {
-                document.getElementById('task-date-error').textContent = 'Data trebuie să fie astăzi sau în viitor.';
-                document.getElementById('task-date-error').classList.add('show');
-                valid = false;
-            }
-            if (!validatePriority(priority)) {
-                document.getElementById('task-priority-error').textContent = 'Prioritatea trebuie să fie între 1 și 5.';
-                document.getElementById('task-priority-error').classList.add('show');
-                valid = false;
-            }
-
-            if (valid) {
-                tasks.push({ name, date, priority: parseInt(priority), completed: false });
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                updateTaskList();
-                showPage('task-list');
-                document.getElementById('task-name').value = '';
-                document.getElementById('task-date').value = '';
-                document.getElementById('task-priority').value = '';
-            }
-        }
-
-        function updateTaskList() {
-            const tbody = document.getElementById('task-table-body');
-            const completedTbody = document.getElementById('completed-task-table-body');
-            tbody.innerHTML = '';
-            completedTbody.innerHTML = '';
-
-            const incompleteTasks = tasks.filter(task => !task.completed);
-            const completedTasks = tasks.filter(task => task.completed);
-
-            incompleteTasks.forEach((task, index) => {
-                if (showCompleted && task.completed) return;
-                const row = document.createElement('tr');
-                row.className = task.completed ? 'task-item completed' : 'task-item';
-                row.innerHTML = `
-                    <td><input type="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleTask(${index})"></td>
-                    <td>${task.name}</td>
-                    <td>${task.date}</td>
-                    <td>${task.priority}</td>
-                    <td class="task-actions">
-                        <button onclick="deleteTask(${index})"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            completedTasks.forEach((task, index) => {
-                const adjustedIndex = tasks.findIndex(t => t === task);
-                const row = document.createElement('tr');
-                row.className = 'task-item completed';
-                row.innerHTML = `
-                    <td><input type="checkbox" checked onclick="toggleTask(${adjustedIndex})"></td>
-                    <td>${task.name}</td>
-                    <td>${task.date}</td>
-                    <td>${task.priority}</td>
-                    <td class="task-actions">
-                        <button onclick="deleteTask(${adjustedIndex})"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                completedTbody.appendChild(row);
-            });
-        }
-
-        function toggleTask(index) {
-            tasks[index].completed = !tasks[index].completed;
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            updateTaskList();
-        }
-
-        function deleteTask(index) {
-            if (!isAuthenticated) {
-                showPage('login');
-                return;
-            }
-            tasks.splice(index, 1);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            updateTaskList();
-        }
-
-        function clearAllTasks() {
-            if (!isAuthenticated) {
-                showPage('login');
-                return;
-            }
-            tasks = [];
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            updateTaskList();
-        }
-
-        function sortTasks() {
-            const sortBy = document.getElementById('sort-tasks').value;
-            tasks.sort((a, b) => {
-                if (sortBy === 'priority') return b.priority - a.priority;
-                return new Date(a.date) - new Date(b.date);
-            });
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            updateTaskList();
-        }
-
-        function toggleShowCompleted() {
-            showCompleted = !showCompleted;
-            document.getElementById('show-completed-text').textContent = showCompleted ? 'Arată toate sarcinile' : 'Arată doar neterminate';
-            updateTaskList();
-        }
-
-        function previewSettings() {
-            const bgColor = document.getElementById('bg-color').value;
-            const textColor = document.getElementById('text-color').value;
-            document.body.style.backgroundColor = bgColor;
-            document.body.style.color = textColor;
-            const preview = document.getElementById('settings-preview');
-            preview.style.backgroundColor = bgColor;
-            preview.style.color = textColor;
-        }
-
-        function applySettings() {
-            if (!isAuthenticated) {
-                showPage('login');
-                return;
-            }
-            const bgColor = document.getElementById('bg-color').value;
-            const textColor = document.getElementById('text-color').value;
-            document.body.style.backgroundColor = bgColor;
-            document.body.style.color = textColor;
-            localStorage.setItem('bgColor', bgColor);
-            localStorage.setItem('textColor', textColor);
-        }
-
-        function updateNavOrder() {
-            if (!isAuthenticated) return;
-
-            const nav = document.getElementById('nav-bar');
-            nav.innerHTML = '';
-            const pageMappings = {
-                home: 'Acasă',
-                'add-task': 'Adaugă Sarcină',
-                'task-list': 'Listă Sarcini',
-                settings: 'Setări',
-                logout: 'Deconectare'
-            };
-
-            // Add "Acasă" link (fixed at the top)
-            const homeLink = document.createElement('a');
-            homeLink.href = '#home';
-            homeLink.textContent = pageMappings['home'];
-            homeLink.onclick = (e) => {
-                e.preventDefault();
-                showPage('home');
-            };
-            nav.appendChild(homeLink);
-
-            // Sort and add the middle links (excluding home and logout)
-            const sortablePages = Object.keys(clickCounts)
-                .filter(pageId => pageId !== 'home' && pageId !== 'logout')
-                .sort((a, b) => clickCounts[b] - clickCounts[a]);
-            sortablePages.forEach(pageId => {
-                const link = document.createElement('a');
-                link.href = `#${pageId}`;
-                link.textContent = pageMappings[pageId];
-                link.onclick = (e) => {
-                    e.preventDefault();
-                    showPage(pageId);
-                };
-                nav.appendChild(link);
-            });
-
-            // Add "Deconectare" link (fixed at the bottom)
-            const logoutLink = document.createElement('a');
-            logoutLink.href = '#logout';
-            logoutLink.textContent = pageMappings['logout'];
-            logoutLink.onclick = (e) => {
-                e.preventDefault();
-                logout();
-            };
-            nav.appendChild(logoutLink);
-
-            // Ensure the active page is highlighted after reordering
-            document.querySelectorAll('#nav-bar a').forEach(link => {
-                const currentPage = document.querySelector('.container[style*="display: block"]').id;
-                if (link.getAttribute('href').substring(1) === currentPage || (currentPage === 'login' && link.getAttribute('href').substring(1) === 'login')) {
-                    link.classList.add('active');
-                }
-            });
-        }
-
-        // Initial navigation setup
-        document.querySelectorAll('nav a').forEach(link => {
-            link.onclick = (e) => {
-                e.preventDefault();
-                const pageId = e.target.getAttribute('href').substring(1);
-                if (pageId === 'logout') logout();
-                else showPage(pageId);
-            };
+                showLoading(false);
+            }, 500);
         });
 
-        // Load saved settings on startup
-        window.onload = function() {
-            const savedBgColor = localStorage.getItem('bgColor') || '#f5f5f5';
-            const savedTextColor = localStorage.getItem('textColor') || '#2f3437';
-            document.body.style.backgroundColor = savedBgColor;
-            document.body.style.color = savedTextColor;
-            document.getElementById('bg-color').value = savedBgColor;
-            document.getElementById('text-color').value = savedTextColor;
+        
+        document.getElementById('register-btn').addEventListener('click', () => {
+            trackControl('register-btn');
+            const username = document.getElementById('register-username');
+            const password = document.getElementById('register-password');
+            const confirmPassword = document.getElementById('register-confirm-password');
+            const isUsernameValid = validateInput(username, 'register-username-error', username.value.length >= 3, 'Numele trebuie să aibă minim 3 caractere.');
+            const isPasswordValid = validateInput(password, 'register-password-error', password.value.length >= 6, 'Parola trebuie să aibă minim 6 caractere.');
+            const isConfirmPasswordValid = validateInput(confirmPassword, 'register-confirm-password-error', password.value === confirmPassword.value, 'Parolele nu se potrivesc.');
+            if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid) return;
+            if (users[username.value]) {
+                showToast('Numele de utilizator există deja!');
+                return;
+            }
+            showLoading(true);
+            setTimeout(() => {
+                users[username.value] = { password: password.value, tasks: [], settings: {} };
+                saveUsers();
+                showToast('Cont creat cu succes! Conectează-te acum.');
+                showPage('login');
+                showLoading(false);
+            }, 500);
+        });
+
+        
+        let tasks = [];
+
+        function saveTasks() {
+            if (currentUser) {
+                users[currentUser].tasks = tasks;
+                saveUsers();
+            }
+        }
+
+        function loadTasks() {
+            tasks = currentUser ? (users[currentUser].tasks || []) : [];
+            renderTasks();
+        }
+
+        document.getElementById('add-task-btn').addEventListener('click', () => {
+            trackControl('add-task-btn');
+            const name = document.getElementById('task-name');
+            const date = document.getElementById('task-date');
+            const priority = document.getElementById('task-priority').value;
+            const today = new Date().toISOString().split('T')[0];
+            const isNameValid = validateInput(name, 'task-name-error', /^[a-zA-Z0-9\s]{3,}$/.test(name.value), 'Numele trebuie să aibă minim 3 caractere și să conțină doar litere, cifre și spații.');
+            const isDateValid = validateInput(date, 'task-date-error', date.value >= today, 'Data trebuie să fie astăzi sau în viitor.');
+            if (!isNameValid || !isDateValid) return;
+            showLoading(true);
+            setTimeout(() => {
+                tasks.push({ id: Date.now(), name: name.value, date: date.value, priority, completed: false });
+                saveTasks();
+                renderTasks();
+                showPage('task-list');
+                showToast('Sarcină adăugată!');
+                name.value = '';
+                date.value = '';
+                showLoading(false);
+            }, 500);
+        });
+
+        
+        document.getElementById('add-task-page').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('add-task-btn').click();
+            }
+        });
+
+        function renderTasks() {
+            const taskTable = document.getElementById('task-table');
+            const completedTaskTable = document.getElementById('completed-task-table');
+            const showUncompleted = document.getElementById('show-uncompleted').checked;
+            taskTable.innerHTML = '';
+            completedTaskTable.innerHTML = '';
+
+            tasks.forEach(task => {
+                if (showUncompleted && task.completed) return;
+                const row = document.createElement('tr');
+                row.className = 'task-row border-b dark:border-gray-600';
+                const formattedDate = new Date(task.date).toLocaleDateString('ro-RO');
+                row.innerHTML = `
+                    <td class="p-3"><input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})" data-control="task-${task.id}-toggle"></td>
+                    <td class="p-3">${task.name}</td>
+                    <td class="p-3">${formattedDate}</td>
+                    <td class="p-3">${task.priority}</td>
+                    <td class="p-3"><button onclick="deleteTask(${task.id})" class="text-red-500 hover:underline" data-control="task-${task.id}-delete">Șterge</button></td>
+                `;
+                if (task.completed) {
+                    completedTaskTable.appendChild(row);
+                } else {
+                    taskTable.appendChild(row);
+                }
+            });
+        }
+
+        function toggleTask(id) {
+            trackControl(`task-${id}-toggle`);
+            tasks = tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task);
+            saveTasks();
+            showToast(`Sarcină ${tasks.find(t => t.id === id).completed ? 'completată' : 'necompletată'}!`);
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            trackControl(`task-${id}-delete`);
+            lastDeletedTask = tasks.find(task => task.id === id);
+            tasks = tasks.filter(task => task.id !== id);
+            saveTasks();
+            showToast('Sarcină ștearsă!', true);
+            renderTasks();
+        }
+
+        document.getElementById('undo-btn').addEventListener('click', () => {
+            if (lastDeletedTask) {
+                tasks.push(lastDeletedTask);
+                saveTasks();
+                renderTasks();
+                showToast('Sarcină restaurată!');
+                lastDeletedTask = null;
+            }
+        });
+
+        document.getElementById('delete-all-tasks').addEventListener('click', () => {
+            trackControl('delete-all-tasks');
+            if (confirm('Sigur vrei să ștergi toate sarcinile?')) {
+                showLoading(true);
+                setTimeout(() => {
+                    lastDeletedTask = null;
+                    tasks = [];
+                    saveTasks();
+                    renderTasks();
+                    showToast('Toate sarcinile au fost șterse!');
+                    showLoading(false);
+                }, 500);
+            }
+        });
+
+        document.getElementById('sort-priority').addEventListener('click', () => {
+            trackControl('sort-priority');
+            tasks.sort((a, b) => {
+                const priorities = { high: 3, medium: 2, low: 1 };
+                return priorities[b.priority] - priorities[a.priority];
+            });
+            renderTasks();
+            showToast('Sarcinile au fost sortate după prioritate!');
+        });
+
+        document.getElementById('sort-date').addEventListener('click', () => {
+            trackControl('sort-date');
+            tasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+            renderTasks();
+            showToast('Sarcinile au fost sortate după dată!');
+        });
+
+        document.getElementById('show-uncompleted').addEventListener('change', () => {
+            trackControl('show-uncompleted');
+            renderTasks();
+        });
+
+        
+        function applySettings() {
+            const bgColor = document.getElementById('bg-color').value;
+            const textColor = document.getElementById('text-color').value;
+            document.body.style.backgroundColor = bgColor;
+            document.body.style.color = textColor;
+            if (currentUser) {
+                users[currentUser].settings = { bgColor, textColor, isDarkMode: document.body.classList.contains('dark-mode') };
+                saveUsers();
+            }
+            showToast('Setările au fost aplicate!');
+        }
+
+        function applyUserSettings() {
+            if (currentUser && users[currentUser].settings) {
+                const { bgColor, textColor, isDarkMode } = users[currentUser].settings;
+                if (bgColor) document.body.style.backgroundColor = bgColor;
+                if (textColor) document.body.style.color = textColor;
+                document.body.classList.toggle('dark-mode', isDarkMode);
+                document.body.classList.toggle('light-mode', !isDarkMode);
+                document.getElementById('theme-toggle').textContent = isDarkMode ? '☀️' : '🌙';
+                document.getElementById('bg-color').value = bgColor || '#f7fafc';
+                document.getElementById('text-color').value = textColor || '#2d3748';
+                document.getElementById('preview').style.backgroundColor = '#ffffff';
+                document.getElementById('preview').style.color = textColor || '#2d3748';
+            }
+        }
+
+        document.getElementById('bg-color').addEventListener('input', () => {
+            document.getElementById('preview').style.backgroundColor = document.getElementById('bg-color').value;
+        });
+
+        document.getElementById('text-color').addEventListener('input', () => {
+            document.getElementById('preview').style.color = document.getElementById('text-color').value;
+        });
+
+        document.getElementById('apply-settings').addEventListener('click', () => {
+            trackControl('apply-settings');
+            applySettings();
+        });
+
+        document.getElementById('reset-settings').addEventListener('click', () => {
+            trackControl('reset-settings');
+            document.body.style.backgroundColor = '';
+            document.body.style.color = '';
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('light-mode');
+            document.getElementById('theme-toggle').textContent = '🌙';
+            document.getElementById('bg-color').value = '#f7fafc';
+            document.getElementById('text-color').value = '#2d3748';
+            document.getElementById('preview').style.backgroundColor = '#ffffff';
+            document.getElementById('preview').style.color = '#2d3748';
+            if (currentUser) {
+                users[currentUser].settings = {};
+                saveUsers();
+            }
+            showToast('Setările au fost resetate!');
+        });
+
+       
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            trackControl('theme-toggle');
+            document.body.classList.toggle('dark-mode');
+            document.body.classList.toggle('light-mode');
+            document.getElementById('theme-toggle').textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            applySettings();
+        });
+
+       
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
+            document.getElementById(`${pageId}-page`).classList.remove('hidden');
+        }
+
+        document.querySelectorAll('[data-control]').forEach(element => {
+            element.addEventListener('click', () => {
+                trackControl(element.getAttribute('data-control'));
+            });
+        });
+
+        document.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = e.target.getAttribute('href').slice(1);
+                if (page === 'logout') {
+                    currentUser = null;
+                    showPage('login');
+                    showToast('Deconectat cu succes!');
+                } else if (!currentUser && page !== 'login' && page !== 'register') {
+                    showPage('login');
+                    showToast('Conectați-vă pentru a accesa această pagină!');
+                } else {
+                    showPage(page);
+                }
+            });
+        });
+
+        
+        if (currentUser) {
+            showPage('home');
+            loadTasks();
+            applyUserSettings();
+            reorderNav();
+        } else {
             showPage('login');
-        };
+        }
     </script>
 </body>
 </html>
